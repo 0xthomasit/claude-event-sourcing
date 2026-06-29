@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: shopping-config
+  namespace: shopping
+data:
+  EUREKA_HOST: service-discovery
+  REDIS_HOST: redis
+  MONGODB_HOST: mongodb
+  KAFKA_BOOTSTRAP_SERVERS: kafka:9092

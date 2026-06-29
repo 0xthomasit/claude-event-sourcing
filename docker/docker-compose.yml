@@ -1,0 +1,179 @@
+# =============================================================================
+# Full local stack — infrastructure + all Spring Boot services
+#
+# Usage:
+#   Start infra first:   docker compose -f docker-compose.infra.yml up -d
+#   Start all services:  docker compose up -d
+#   Start one service:   docker compose up -d order-service
+# =============================================================================
+version: '3.9'
+
+x-service-defaults: &service-defaults
+  restart: unless-stopped
+  networks:
+    - shopping-net
+  environment:
+    EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-discovery:8761/eureka/
+    DB_PASSWORD: secret
+services:
+
+  # ── Infrastructure (Tier 0) ──────────────────────────────────────────────────
+  service-discovery:
+    <<: *service-defaults
+    build:
+      context: ../infrastructure/service-discovery
+      dockerfile: Dockerfile
+    ports: ["8761:8761"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  config-server:
+    <<: *service-defaults
+    build:
+      context: ../infrastructure/config-server
+      dockerfile: Dockerfile
+    ports: ["8888:8888"]
+    depends_on:
+      service-discovery:
+        condition: service_healthy
+
+  api-gateway:
+    <<: *service-defaults
+    build:
+      context: ../infrastructure/api-gateway
+      dockerfile: Dockerfile
+    ports: ["8080:8080"]
+    depends_on:
+      service-discovery:
+        condition: service_healthy
+
+  # ── Tier 1: Event Sourcing Services ─────────────────────────────────────────
+  order-service:
+    <<: *service-defaults
+    build:
+      context: ../services/order-service
+      dockerfile: Dockerfile
+    ports: ["8081:8081"]
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-order:5432/order_events
+      SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/order_read
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    depends_on:
+      service-discovery:
+        condition: service_healthy
+
+  payment-service:
+    <<: *service-defaults
+    build:
+      context: ../services/payment-service
+      dockerfile: Dockerfile
+    ports: ["8082:8082"]
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-payment:5432/payment_events
+      SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/payment_read
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    depends_on:
+      service-discovery:
+        condition: service_healthy
+
+  inventory-service:
+    <<: *service-defaults
+    build:
+      context: ../services/inventory-service
+      dockerfile: Dockerfile
+    ports: ["8083:8083"]
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-inventory:5432/inventory_events
+      SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/inventory_read
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    depends_on:
+      service-discovery:
+        condition: service_healthy
+
+  # ── Tier 2: CRUD + Kafka Consumer ───────────────────────────────────────────
+  notification-service:
+    <<: *service-defaults
+    build:
+      context: ../services/notification-service
+      dockerfile: Dockerfile
+    ports: ["8084:8084"]
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/notification_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    depends_on:
+      service-discovery:
+        condition: service_healthy
+
+  shipping-service:
+    <<: *service-defaults
+    build:
+      context: ../services/shipping-service
+      dockerfile: Dockerfile
+    ports: ["8085:8085"]
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/shipping_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    depends_on:
+      service-discovery:
+        condition: service_healthy
+
+  # ── Tier 3: Pure CRUD ────────────────────────────────────────────────────────
+  product-service:
+    <<: *service-defaults
+    build:
+      context: ../services/product-service
+      dockerfile: Dockerfile
+    ports: ["8086:8086"]
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-product:5432/product_db
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    depends_on:
+      service-discovery:
+        condition: service_healthy
+
+  user-service:
+    <<: *service-defaults
+    build:
+      context: ../services/user-service
+      dockerfile: Dockerfile
+    ports: ["8087:8087"]
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-user:5432/user_db
+      SPRING_DATA_REDIS_HOST: redis
+    depends_on:
+      service-discovery:
+        condition: service_healthy
+
+  cart-service:
+    <<: *service-defaults
+    build:
+      context: ../services/cart-service
+      dockerfile: Dockerfile
+    ports: ["8088:8088"]
+    environment:
+      SPRING_DATA_REDIS_HOST: redis
+    depends_on:
+      service-discovery:
+        condition: service_healthy
+
+  auth-service:
+    <<: *service-defaults
+    build:
+      context: ../services/auth-service
+      dockerfile: Dockerfile
+    ports: ["8089:8089"]
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-auth:5432/auth_db
+      SPRING_DATA_REDIS_HOST: redis
+    depends_on:
+      service-discovery:
+        condition: service_healthy
+
+networks:
+  shopping-net:
+    driver: bridge

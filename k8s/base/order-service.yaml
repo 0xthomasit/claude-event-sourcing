@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-service
+  namespace: shopping
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order-service
+  template:
+    metadata:
+      labels:
+        app: order-service
+    spec:
+      containers:
+        - name: order-service
+          image: shopping/order-service:latest
+          ports:
+            - containerPort: 8081
+          env:
+            - name: EUREKA_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: shopping-config
+                  key: EUREKA_HOST
+            - name: MONGODB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: shopping-config
+                  key: MONGODB_HOST
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              valueFrom:
+                configMapKeyRef:
+                  name: shopping-config
+                  key: KAFKA_BOOTSTRAP_SERVERS
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: shopping-secrets
+                  key: POSTGRES_PASSWORD
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8081
+            initialDelaySeconds: 25
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-service
+  namespace: shopping
+spec:
+  selector:
+    app: order-service
+  ports:
+    - port: 8081
+      targetPort: 8081

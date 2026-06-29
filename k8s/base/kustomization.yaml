@@ -1,0 +1,11 @@
+resources:
+  - namespace.yaml
+  - configmap.yaml
+  - secret.example.yaml
+  - service-discovery.yaml
+  - api-gateway.yaml
+  - order-service.yaml
+  - payment-service.yaml
+  - inventory-service.yaml
+  - order-service-hpa.yaml
+  - payment-service-hpa.yaml
