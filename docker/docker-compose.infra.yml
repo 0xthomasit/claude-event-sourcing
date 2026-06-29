@@ -1,8 +1,6 @@
-version: '3.9'
-
 services:
   postgres-order:
-    image: postgres:16-alpine
+    image: postgres:17.10-alpine
     container_name: postgres-order
     environment:
       POSTGRES_DB: order_events
@@ -16,7 +14,7 @@ services:
       - shopping-net
 
   postgres-payment:
-    image: postgres:16-alpine
+    image: postgres:17.10-alpine
     container_name: postgres-payment
     environment:
       POSTGRES_DB: payment_events
@@ -30,7 +28,7 @@ services:
       - shopping-net
 
   postgres-inventory:
-    image: postgres:16-alpine
+    image: postgres:17.10-alpine
     container_name: postgres-inventory
     environment:
       POSTGRES_DB: inventory_events
@@ -44,7 +42,7 @@ services:
       - shopping-net
 
   postgres-auth:
-    image: postgres:16-alpine
+    image: postgres:17.10-alpine
     container_name: postgres-auth
     environment:
       POSTGRES_DB: auth_db
@@ -58,7 +56,7 @@ services:
       - shopping-net
 
   postgres-product:
-    image: postgres:16-alpine
+    image: postgres:17.10-alpine
     container_name: postgres-product
     environment:
       POSTGRES_DB: product_db
@@ -72,7 +70,7 @@ services:
       - shopping-net
 
   postgres-user:
-    image: postgres:16-alpine
+    image: postgres:17.10-alpine
     container_name: postgres-user
     environment:
       POSTGRES_DB: user_db
@@ -86,7 +84,7 @@ services:
       - shopping-net
 
   mongodb:
-    image: mongo:7-jammy
+    image: mongo:8.3.4-noble
     container_name: mongodb
     ports:
       - "27017:27017"
@@ -96,7 +94,7 @@ services:
       - shopping-net
 
   mysql:
-    image: mysql:8.0
+    image: mysql:9.7.1
     container_name: mysql
     environment:
       MYSQL_ROOT_PASSWORD: secret
@@ -109,7 +107,7 @@ services:
       - shopping-net
 
   redis:
-    image: redis:7-alpine
+    image: redis:8.8.0-alpine
     container_name: redis
     ports:
       - "6379:6379"
@@ -117,7 +115,7 @@ services:
       - shopping-net
 
   zookeeper:
-    image: confluentinc/cp-zookeeper:7.6.0
+    image: confluentinc/cp-zookeeper:7.6.12
     container_name: zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
@@ -126,7 +124,7 @@ services:
       - shopping-net
 
   kafka:
-    image: confluentinc/cp-kafka:7.6.0
+    image: confluentinc/cp-kafka:8.2.2
     container_name: kafka
     depends_on:
       - zookeeper

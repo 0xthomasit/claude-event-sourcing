@@ -6,8 +6,6 @@
 #   Start all services:  docker compose up -d
 #   Start one service:   docker compose up -d order-service
 # =============================================================================
-version: '3.9'
-
 x-service-defaults: &service-defaults
   restart: unless-stopped
   networks:
