@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -25,8 +26,8 @@ public class ConfirmOrderHandler {
     private final OrderRepository orderRepository;
     private final OrderProjector  orderProjector;
     private final KafkaEventPublisher kafkaPublisher;
+    private final Executor taskExecutor;
 
-    @Transactional
     public void handle(ConfirmOrderCommand command) {
         Order order = orderRepository.findById(command.orderId())
                 .orElseThrow(() -> new AggregateNotFoundException(
@@ -58,15 +59,15 @@ public class ConfirmOrderHandler {
         CompletableFuture<Void> inventoryCheck = CompletableFuture.runAsync(() -> {
             // TODO: RestTemplate/Feign call to inventory-service
             log.debug("Inventory check passed for order {}", order.getId());
-        });
+        }, taskExecutor);
         CompletableFuture<Void> paymentCheck = CompletableFuture.runAsync(() -> {
             // TODO: RestTemplate/Feign call to payment-service eligibility
             log.debug("Payment eligibility check passed for order {}", order.getId());
-        });
+        }, taskExecutor);
         CompletableFuture<Void> addressCheck = CompletableFuture.runAsync(() -> {
             // TODO: RestTemplate/Feign call to user-service address validation
             log.debug("Address check passed for order {}", order.getId());
-        });
+        }, taskExecutor);
 
         try {
             CompletableFuture.allOf(inventoryCheck, paymentCheck, addressCheck)

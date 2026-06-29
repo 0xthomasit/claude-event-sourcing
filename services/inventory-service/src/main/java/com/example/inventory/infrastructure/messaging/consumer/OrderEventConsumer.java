@@ -35,7 +35,8 @@ public class OrderEventConsumer {
     public void onOrderPlaced(OrderPlacedEvent event) {
         log.info("Order placed {}, reserving stock for {} items...",
                 event.getAggregateId(), event.getItems().size());
-        event.getItems().forEach(item -> {
+        boolean failed = false;
+        for (var item : event.getItems()) {
             try {
                 reserveStockHandler.handle(ReserveStockCommand.builder()
                         .productId(item.getProductId())
@@ -45,9 +46,20 @@ public class OrderEventConsumer {
             } catch (Exception e) {
                 log.error("Failed to reserve stock for product {} order {}: {}",
                         item.getProductId(), event.getAggregateId(), e.getMessage());
-                // TODO: publish StockReservationFailedEvent → trigger order cancellation saga
+                failed = true;
+                break;
             }
-        });
+        }
+
+        if (failed) {
+            log.info("Rolling back partial stock reservations for order {}", event.getAggregateId());
+            try {
+                releaseStockHandler.handleByOrderId(event.getAggregateId());
+            } catch (Exception ex) {
+                log.error("Failed to rollback reservations for order {}: {}", event.getAggregateId(), ex.getMessage());
+            }
+            // TODO: publish StockReservationFailedEvent → trigger order cancellation saga
+        }
     }
 
     @KafkaListener(topics = KafkaTopics.ORDER_CANCELLED, groupId = "inventory-service")
