@@ -13,7 +13,7 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 
 /**
  * Cart Service — Redis Hash per user.
@@ -104,12 +104,13 @@ public class CartService {
     }
 
     public int getItemCount(String userId) {
-        return (int) redisTemplate.opsForHash().size(cartKey(userId));
+        Long size = redisTemplate.opsForHash().size(cartKey(userId));
+        return size != null ? size.intValue() : 0;
     }
 
     // ─── Internal ─────────────────────────────────────────────────────────────
 
     private void resetTtl(String key) {
-        redisTemplate.expire(key, ttlHours, TimeUnit.HOURS);
+        redisTemplate.expire(key, Duration.ofHours(ttlHours));
     }
 }

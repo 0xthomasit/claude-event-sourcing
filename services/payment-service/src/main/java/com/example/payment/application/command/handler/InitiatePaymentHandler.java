@@ -8,6 +8,7 @@ import com.example.payment.domain.model.PaymentMethod;
 import com.example.payment.domain.model.PaymentMethodType;
 import com.example.payment.domain.repository.PaymentRepository;
 import com.example.payment.infrastructure.messaging.projector.PaymentProjector;
+import com.example.payment.infrastructure.messaging.publisher.KafkaEventPublisher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ public class InitiatePaymentHandler {
 
     private final PaymentRepository paymentRepository;
     private final PaymentProjector  projector;
+    private final KafkaEventPublisher publisher;
 
     @Transactional
     public UUID handle(InitiatePaymentCommand cmd) {
@@ -45,11 +47,9 @@ public class InitiatePaymentHandler {
         // 1. Persist to Event Store (source of truth — FIRST)
         paymentRepository.save(payment);
 
-        // 2. Update Read Model synchronously
-        events.stream()
-                .filter(e -> e instanceof PaymentInitiatedEvent)
-                .map(e -> (PaymentInitiatedEvent) e)
-                .forEach(projector::on);
+        // 2. Update Read Model synchronously and publish to Kafka
+        projector.projectAll(events);
+        publisher.publishAll(payment.getId().toString(), events);
 
         log.info("Payment initiated: paymentId={}, orderId={}",
                 payment.getId(), cmd.getOrderId());

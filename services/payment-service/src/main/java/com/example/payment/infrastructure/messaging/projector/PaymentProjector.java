@@ -3,12 +3,14 @@ package com.example.payment.infrastructure.messaging.projector;
 import com.example.common.events.payment.*;
 import com.example.payment.domain.model.PaymentStatus;
 import com.example.payment.infrastructure.persistence.entity.PaymentDocument;
+import com.example.common.domain.DomainEvent;
 import com.example.payment.infrastructure.persistence.repository.MongoPaymentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
+import java.util.List;
 
 /**
  * Builds and updates the MongoDB Read Model from domain events.
@@ -20,6 +22,17 @@ import java.time.Instant;
 public class PaymentProjector {
 
     private final MongoPaymentRepository mongoRepo;
+
+    public void projectAll(List<DomainEvent> events) {
+        for (DomainEvent event : events) {
+            if (event instanceof PaymentInitiatedEvent e) on(e);
+            else if (event instanceof PaymentProcessingEvent e) on(e);
+            else if (event instanceof PaymentCompletedEvent e) on(e);
+            else if (event instanceof PaymentFailedEvent e) on(e);
+            else if (event instanceof RefundInitiatedEvent e) on(e);
+            else if (event instanceof RefundCompletedEvent e) on(e);
+        }
+    }
 
     public void on(PaymentInitiatedEvent event) {
         PaymentDocument doc = PaymentDocument.builder()

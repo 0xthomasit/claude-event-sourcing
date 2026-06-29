@@ -39,15 +39,9 @@ public class CompletePaymentHandler {
         // 1. Persist to Event Store FIRST
         paymentRepository.save(payment);
 
-        // 2. Update Read Model
-        events.stream()
-                .filter(e -> e instanceof PaymentCompletedEvent)
-                .map(e -> (PaymentCompletedEvent) e)
-                .forEach(e -> {
-                    projector.on(e);
-                    // 3. Publish to Kafka AFTER Event Store persisted
-                    publisher.publish(e);
-                });
+        // 2. Update Read Model and publish to Kafka
+        projector.projectAll(events);
+        publisher.publishAll(payment.getId().toString(), events);
 
         log.info("Payment completed: paymentId={}, orderId={}",
                 cmd.getPaymentId(), payment.getOrderId());

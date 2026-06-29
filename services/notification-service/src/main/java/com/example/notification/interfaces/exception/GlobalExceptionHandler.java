@@ -1,4 +1,4 @@
-File đã được tạo! Tiếp tục đi!package com.example.notification.interfaces.exception;
+package com.example.notification.interfaces.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

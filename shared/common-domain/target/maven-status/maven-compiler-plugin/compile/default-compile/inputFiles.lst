@@ -1,6 +1,0 @@
-C:\Workspace\Personal\Spring-Boot\Learn_DDD\claude-event-sourcing\shared\common-domain\src\main\java\com\example\common\domain\DomainEvent.java
-C:\Workspace\Personal\Spring-Boot\Learn_DDD\claude-event-sourcing\shared\common-domain\src\main\java\com\example\common\domain\ValueObject.java
-C:\Workspace\Personal\Spring-Boot\Learn_DDD\claude-event-sourcing\shared\common-domain\src\main\java\com\example\common\domain\exception\DomainException.java
-C:\Workspace\Personal\Spring-Boot\Learn_DDD\claude-event-sourcing\shared\common-domain\src\main\java\com\example\common\domain\model\Money.java
-C:\Workspace\Personal\Spring-Boot\Learn_DDD\claude-event-sourcing\shared\common-domain\src\main\java\com\example\common\domain\exception\AggregateNotFoundException.java
-C:\Workspace\Personal\Spring-Boot\Learn_DDD\claude-event-sourcing\shared\common-domain\src\main\java\com\example\common\domain\AggregateRoot.java

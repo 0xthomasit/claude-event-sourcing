@@ -37,13 +37,8 @@ public class FailPaymentHandler {
         paymentRepository.save(payment);
 
         // 2. Update Read Model + publish Kafka (Saga rollback trigger)
-        events.stream()
-                .filter(e -> e instanceof PaymentFailedEvent)
-                .map(e -> (PaymentFailedEvent) e)
-                .forEach(e -> {
-                    projector.on(e);
-                    publisher.publish(e);  // → order-service will cancel the order
-                });
+        projector.projectAll(events);
+        publisher.publishAll(payment.getId().toString(), events);
 
         log.info("Payment failed: paymentId={}, orderId={}, reason={}",
                 cmd.getPaymentId(), payment.getOrderId(), cmd.getReason());

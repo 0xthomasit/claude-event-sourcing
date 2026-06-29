@@ -1,4 +1,4 @@
-File đã được tạo! Tiếp tục đi!package com.example.user.application.dto;
+package com.example.user.application.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

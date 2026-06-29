@@ -676,8 +676,8 @@ services:
 </parent>
 
 <properties>
-    <java.version>21</java.version>
-    <spring-cloud.version>2023.0.0</spring-cloud.version>
+    <java.version>25</java.version>
+    <spring-cloud.version>2025.1.2</spring-cloud.version>
 </properties>
 
 <dependencyManagement>

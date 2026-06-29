@@ -1,4 +1,4 @@
-File đã được tạo! Tiếp tục đi!package com.example.notification.infrastructure.persistence.repository;
+package com.example.notification.infrastructure.persistence.repository;
 
 import com.example.notification.domain.model.NotificationStatus;
 import com.example.notification.domain.model.NotificationType;

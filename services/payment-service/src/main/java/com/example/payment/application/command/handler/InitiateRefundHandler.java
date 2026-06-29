@@ -5,6 +5,7 @@ import com.example.payment.application.command.dto.InitiateRefundCommand;
 import com.example.payment.domain.model.Payment;
 import com.example.payment.domain.repository.PaymentRepository;
 import com.example.payment.infrastructure.messaging.projector.PaymentProjector;
+import com.example.payment.infrastructure.messaging.publisher.KafkaEventPublisher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ public class InitiateRefundHandler {
 
     private final PaymentRepository paymentRepository;
     private final PaymentProjector  projector;
+    private final KafkaEventPublisher publisher;
 
     @Transactional
     public void handle(InitiateRefundCommand cmd) {
@@ -31,11 +33,9 @@ public class InitiateRefundHandler {
         // 1. Persist to Event Store FIRST
         paymentRepository.save(payment);
 
-        // 2. Update Read Model
-        events.stream()
-                .filter(e -> e instanceof RefundInitiatedEvent)
-                .map(e -> (RefundInitiatedEvent) e)
-                .forEach(projector::on);
+        // 2. Update Read Model and publish Kafka
+        projector.projectAll(events);
+        publisher.publishAll(payment.getId().toString(), events);
 
         log.info("Refund initiated: paymentId={}, orderId={}",
                 payment.getId(), cmd.getOrderId());
