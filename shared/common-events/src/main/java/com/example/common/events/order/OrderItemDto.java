@@ -3,13 +3,12 @@ package com.example.common.events.order;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.extern.jackson.Jacksonized;
 
 import java.math.BigDecimal;
 
 @Getter
 @Builder
-@Jacksonized
+@lombok.AllArgsConstructor(onConstructor_ = {@com.fasterxml.jackson.annotation.JsonCreator})
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OrderItemDto {
 

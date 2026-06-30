@@ -1,7 +1,7 @@
 package com.example.cart.application.service;
 
 import com.example.cart.domain.model.CartItem;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

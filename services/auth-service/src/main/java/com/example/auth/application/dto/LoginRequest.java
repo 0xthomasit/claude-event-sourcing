@@ -1,14 +1,15 @@
 package com.example.auth.application.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.extern.jackson.Jacksonized;
+import lombok.Value;
 
-@Getter
+@Value
 @Builder
-@Jacksonized
+@AllArgsConstructor(onConstructor_ = {@JsonCreator})
 public class LoginRequest {
 
     @Email @NotBlank

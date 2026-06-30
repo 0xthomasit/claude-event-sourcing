@@ -6,7 +6,7 @@ import com.example.payment.domain.model.Payment;
 import com.example.payment.domain.repository.PaymentRepository;
 import com.example.payment.infrastructure.persistence.entity.EventStoreEntry;
 import com.example.payment.infrastructure.persistence.repository.JpaEventStoreRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

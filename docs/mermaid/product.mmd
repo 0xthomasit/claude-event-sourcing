@@ -1,0 +1,68 @@
+graph TD
+    %% Định nghĩa các Style cho các Layers
+    classDef client fill:#eceff1,stroke:#37474f,stroke-width:2px,rx:5px;
+    classDef presentation fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,rx:5px;
+    classDef application fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,rx:5px;
+    classDef domain fill:#fff8e1,stroke:#f57f17,stroke-width:2px,rx:5px;
+    classDef infra fill:#fce4ec,stroke:#c2185b,stroke-width:2px,rx:5px;
+
+    %% Client/External
+    Client["💻 Client (Web/Mobile/Postman)"]:::client
+
+    subgraph ProductService ["Product Service (DDD Layers)"]
+        
+        %% Interfaces Layer
+        subgraph Interfaces ["1. Interfaces Layer (Presentation)"]
+            ProductController["ProductController"]
+            CategoryController["CategoryController"]
+            GlobalExceptionHandler["GlobalExceptionHandler"]
+        end
+        class Interfaces presentation;
+
+        %% Application Layer
+        subgraph Application ["2. Application Layer"]
+            ProductServiceClass["ProductService"]
+            CategoryServiceClass["CategoryService"]
+            DTOs["DTOs (Requests/Responses)"]
+        end
+        class Application application;
+
+        %% Domain Layer
+        subgraph Domain ["3. Domain Layer (Core)"]
+            ProductEntity["Product (Aggregate Root)"]
+            CategoryEntity["Category (Entity)"]
+            ProductStatus["ProductStatus (Enum)"]
+            ProductRepoInterface["ProductRepository (Interface)"]
+            CategoryRepoInterface["CategoryRepository (Interface)"]
+        end
+        class Domain domain;
+
+        %% Infrastructure Layer
+        subgraph Infrastructure ["4. Infrastructure Layer"]
+            KafkaConfig["KafkaConfig"]
+            EventPublisher["ProductEventPublisher (Kafka)"]
+            DbPersistence["Spring Data JPA (Auto Impl)"]
+        end
+        class Infrastructure infra;
+
+    end
+
+    %% Mối quan hệ gọi / Luồng dữ liệu (Call Flow)
+    Client -->|HTTP Requests| ProductController & CategoryController
+    
+    ProductController -->|Calls| ProductServiceClass
+    CategoryController -->|Calls| CategoryServiceClass
+    
+    ProductServiceClass -.->|Uses| DTOs
+    CategoryServiceClass -.->|Uses| DTOs
+    
+    ProductServiceClass -->|Orchestrates| ProductEntity
+    ProductServiceClass -->|Queries/Saves| ProductRepoInterface
+    CategoryServiceClass -->|Queries/Saves| CategoryRepoInterface
+
+    ProductServiceClass -->|Publishes Events| EventPublisher
+    
+    %% Mối quan hệ phụ thuộc ngược (Dependency Inversion & Persistence)
+    ProductRepoInterface -.->|Implemented by| DbPersistence
+    CategoryRepoInterface -.->|Implemented by| DbPersistence
+    EventPublisher -->|Sends message to| KafkaConfig

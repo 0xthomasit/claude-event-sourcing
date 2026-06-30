@@ -9,7 +9,7 @@ import com.example.inventory.infrastructure.persistence.entity.StockSnapshotEntr
 import com.example.inventory.infrastructure.persistence.repository.JpaEventStoreRepository;
 import com.example.inventory.infrastructure.persistence.repository.JpaSnapshotRepository;
 import com.example.inventory.infrastructure.persistence.snapshot.StockItemSnapshot;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

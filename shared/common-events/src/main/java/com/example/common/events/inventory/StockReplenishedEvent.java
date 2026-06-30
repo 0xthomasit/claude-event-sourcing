@@ -4,13 +4,12 @@ import com.example.common.domain.DomainEvent;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.extern.jackson.Jacksonized;
 
 import java.time.Instant;
 
 @Getter
 @Builder
-@Jacksonized
+@lombok.AllArgsConstructor(onConstructor_ = {@com.fasterxml.jackson.annotation.JsonCreator})
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class StockReplenishedEvent implements DomainEvent {
 

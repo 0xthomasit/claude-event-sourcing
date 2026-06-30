@@ -6,7 +6,7 @@ import com.example.order.domain.model.Order;
 import com.example.order.domain.repository.OrderRepository;
 import com.example.order.infrastructure.persistence.entity.EventStoreEntry;
 import com.example.order.infrastructure.persistence.repository.JpaEventStoreRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

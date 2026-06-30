@@ -73,8 +73,6 @@
                 <scope>import</scope>
             </dependency>
 
-
-
             <!-- Internal shared libraries -->
             <dependency>
                 <groupId>com.example</groupId>
@@ -103,6 +101,16 @@
 
     <!-- Dependencies chung cho MỌI module -->
     <dependencies>
+        <!-- Observability -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <!-- To activate Prometheus endpoint -->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>

@@ -3,14 +3,13 @@ package com.example.product.application.dto;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.extern.jackson.Jacksonized;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
 @Getter
 @Builder
-@Jacksonized
+@lombok.AllArgsConstructor(onConstructor_ = {@com.fasterxml.jackson.annotation.JsonCreator})
 public class CreateProductRequest {
 
     @NotBlank

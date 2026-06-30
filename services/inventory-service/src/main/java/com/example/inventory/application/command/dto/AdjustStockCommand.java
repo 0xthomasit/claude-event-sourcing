@@ -3,11 +3,10 @@ package com.example.inventory.application.command.dto;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.extern.jackson.Jacksonized;
 
 @Getter
 @Builder
-@Jacksonized
+@lombok.AllArgsConstructor(onConstructor_ = {@com.fasterxml.jackson.annotation.JsonCreator})
 public class AdjustStockCommand {
     @NotBlank private final String productId;
               private final int    delta;    // positive or negative
