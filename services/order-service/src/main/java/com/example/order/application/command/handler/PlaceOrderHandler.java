@@ -9,6 +9,7 @@ import com.example.order.domain.model.OrderItem;
 import com.example.order.domain.repository.OrderRepository;
 import com.example.order.infrastructure.messaging.projector.OrderProjector;
 import com.example.order.infrastructure.messaging.publisher.KafkaEventPublisher;
+import com.example.order.infrastructure.metrics.OrderMetrics;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ public class PlaceOrderHandler {
     private final OrderRepository orderRepository;
     private final OrderProjector  orderProjector;
     private final KafkaEventPublisher kafkaPublisher;
+    private final OrderMetrics orderMetrics;
 
     @Transactional
     public UUID handle(PlaceOrderCommand command) {
@@ -50,6 +52,7 @@ public class PlaceOrderHandler {
         // 3. Publish to Kafka (after persist — never before)
         kafkaPublisher.publishAll(order.getId().toString(), events);
 
+        orderMetrics.orderPlaced();
         log.info("Order placed: {}", order.getId());
         return order.getId();
     }

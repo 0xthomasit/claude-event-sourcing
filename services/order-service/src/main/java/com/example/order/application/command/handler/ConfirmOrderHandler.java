@@ -8,6 +8,7 @@ import com.example.order.domain.model.Order;
 import com.example.order.domain.repository.OrderRepository;
 import com.example.order.infrastructure.messaging.projector.OrderProjector;
 import com.example.order.infrastructure.messaging.publisher.KafkaEventPublisher;
+import com.example.order.infrastructure.metrics.OrderMetrics;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ public class ConfirmOrderHandler {
     private final OrderRepository orderRepository;
     private final OrderProjector  orderProjector;
     private final KafkaEventPublisher kafkaPublisher;
+    private final OrderMetrics orderMetrics;
     private final Executor taskExecutor;
 
     public void handle(ConfirmOrderCommand command) {
@@ -47,6 +49,8 @@ public class ConfirmOrderHandler {
                 .forEach(orderProjector::on);
 
         kafkaPublisher.publishAll(order.getId().toString(), events);
+
+        orderMetrics.orderConfirmed();
         log.info("Order confirmed: {}", order.getId());
     }
 

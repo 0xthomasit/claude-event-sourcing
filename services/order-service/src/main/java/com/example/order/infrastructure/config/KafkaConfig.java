@@ -22,6 +22,9 @@ public class KafkaConfig {
     @Bean public NewTopic orderShippedTopic() {
         return TopicBuilder.name(KafkaTopics.ORDER_SHIPPED).partitions(6).replicas(1).build();
     }
+    @Bean public NewTopic orderDeliveredTopic() {
+        return TopicBuilder.name(KafkaTopics.ORDER_DELIVERED).partitions(3).replicas(1).build();
+    }
     @Bean public JsonMessageConverter jsonMessageConverter() {
         return new JsonMessageConverter();
     }

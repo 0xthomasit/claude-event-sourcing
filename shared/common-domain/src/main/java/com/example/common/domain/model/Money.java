@@ -49,6 +49,36 @@ public final class Money implements ValueObject {
         return new Money(this.amount.multiply(BigDecimal.valueOf(factor)), this.currency);
     }
 
+    public Money subtract(Money other) {
+        requireSameCurrency(other);
+        BigDecimal result = this.amount.subtract(other.amount);
+        if (result.compareTo(BigDecimal.ZERO) < 0) {
+            throw new DomainException("Subtraction would result in negative money");
+        }
+        return new Money(result, this.currency);
+    }
+
+    public Money divide(int divisor) {
+        if (divisor == 0) {
+            throw new DomainException("Cannot divide money by zero");
+        }
+        return new Money(this.amount.divide(BigDecimal.valueOf(divisor), 2,
+                java.math.RoundingMode.HALF_UP), this.currency);
+    }
+
+    public boolean isZero() {
+        return amount.compareTo(BigDecimal.ZERO) == 0;
+    }
+
+    public boolean isPositive() {
+        return amount.compareTo(BigDecimal.ZERO) > 0;
+    }
+
+    public boolean isGreaterThan(Money other) {
+        requireSameCurrency(other);
+        return this.amount.compareTo(other.amount) > 0;
+    }
+
     private void requireSameCurrency(Money other) {
         if (other == null) {
             throw new DomainException("Cannot operate on null Money");

@@ -47,6 +47,7 @@ public class KafkaEventPublisher {
             case "ORDER_CONFIRMED" -> KafkaTopics.ORDER_CONFIRMED;
             case "ORDER_CANCELLED" -> KafkaTopics.ORDER_CANCELLED;
             case "ORDER_SHIPPED"   -> KafkaTopics.ORDER_SHIPPED;
+            case "ORDER_DELIVERED" -> KafkaTopics.ORDER_DELIVERED;
             default -> null;
         };
     }

@@ -2,8 +2,8 @@ package com.example.order.application.command.handler;
 
 import com.example.common.domain.DomainEvent;
 import com.example.common.domain.exception.AggregateNotFoundException;
-import com.example.common.events.order.OrderCancelledEvent;
-import com.example.order.application.command.dto.CancelOrderCommand;
+import com.example.common.events.order.OrderDeliveredEvent;
+import com.example.order.application.command.dto.DeliverOrderCommand;
 import com.example.order.domain.model.Order;
 import com.example.order.domain.repository.OrderRepository;
 import com.example.order.infrastructure.messaging.projector.OrderProjector;
@@ -19,7 +19,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class CancelOrderHandler {
+public class DeliverOrderHandler {
 
     private final OrderRepository orderRepository;
     private final OrderProjector  orderProjector;
@@ -27,24 +27,24 @@ public class CancelOrderHandler {
     private final OrderMetrics orderMetrics;
 
     @Transactional
-    public void handle(CancelOrderCommand command) {
+    public void handle(DeliverOrderCommand command) {
         Order order = orderRepository.findById(command.orderId())
                 .orElseThrow(() -> new AggregateNotFoundException(
                         "Order not found: " + command.orderId()));
 
-        order.cancel(command.reason());
+        order.markDelivered();
 
         List<DomainEvent> events = List.copyOf(order.getUncommittedEvents());
         orderRepository.save(order);
 
         events.stream()
-                .filter(e -> e instanceof OrderCancelledEvent)
-                .map(e -> (OrderCancelledEvent) e)
+                .filter(e -> e instanceof OrderDeliveredEvent)
+                .map(e -> (OrderDeliveredEvent) e)
                 .forEach(orderProjector::on);
 
         kafkaPublisher.publishAll(order.getId().toString(), events);
 
-        orderMetrics.orderCancelled();
-        log.info("Order cancelled: {} reason: {}", order.getId(), command.reason());
+        orderMetrics.orderDelivered();
+        log.info("Order delivered: {}", order.getId());
     }
 }

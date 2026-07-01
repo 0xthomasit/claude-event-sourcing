@@ -7,6 +7,9 @@ import com.example.order.infrastructure.persistence.entity.OrderDocument;
 import com.example.order.infrastructure.persistence.repository.JpaEventStoreRepository;
 import com.example.order.infrastructure.persistence.repository.MongoOrderRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,10 +26,10 @@ public class OrderQueryHandler {
         return mongoRepo.findById(orderId).map(this::toResponse);
     }
 
-    public List<OrderResponse> findByCustomerId(String customerId) {
-        return mongoRepo.findByCustomerId(customerId).stream()
-                .map(this::toResponse)
-                        .toList();
+    public Page<OrderResponse> findByCustomerId(String customerId, int page, int size) {
+        return mongoRepo.findByCustomerId(customerId,
+                        PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")))
+                .map(this::toResponse);
     }
 
     public List<OrderEventHistoryResponse> findHistoryByOrderId(String orderId) {

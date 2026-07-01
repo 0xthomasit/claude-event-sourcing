@@ -1,0 +1,114 @@
+name: CI — Build, Test & Docker
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  JAVA_VERSION: '25'
+  REGISTRY: ghcr.io
+  IMAGE_PREFIX: ${{ github.repository }}
+
+jobs:
+
+  # ─── Build & Test ────────────────────────────────────────────────────────────
+  build:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Build shared libraries (skip tests)
+        run: >
+          ./mvnw install -pl shared/common-domain,shared/common-events,shared/common-security,shared/common-web
+          -am -DskipTests -q
+
+      - name: Build & Test all services
+        run: ./mvnw clean verify -T 2C
+
+      - name: Upload JaCoCo reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jacoco-reports
+          path: '**/target/site/jacoco/**'
+          retention-days: 7
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: '**/target/surefire-reports/**'
+          retention-days: 7
+
+  # ─── Docker Build & Push ─────────────────────────────────────────────────────
+  docker:
+    name: Docker Build & Push
+    needs: build
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      matrix:
+        service:
+          - services/order-service
+          - services/payment-service
+          - services/inventory-service
+          - services/notification-service
+          - services/shipping-service
+          - services/product-service
+          - services/user-service
+          - services/cart-service
+          - services/auth-service
+          - infrastructure/api-gateway
+          - infrastructure/service-discovery
+          - infrastructure/config-server
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract service name
+        id: meta
+        run: |
+          SERVICE_NAME=$(basename ${{ matrix.service }})
+          echo "service_name=${SERVICE_NAME}" >> "$GITHUB_OUTPUT"
+          echo "image=${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/${SERVICE_NAME}" >> "$GITHUB_OUTPUT"
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Build JAR (skip tests — already passed)
+        run: >
+          ./mvnw package -pl ${{ matrix.service }} -am -DskipTests -q
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build & push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.service }}
+          push: true
+          tags: |
+            ${{ steps.meta.outputs.image }}:${{ github.sha }}
+            ${{ steps.meta.outputs.image }}:latest
