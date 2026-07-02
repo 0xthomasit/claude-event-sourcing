@@ -1,9 +1,12 @@
 server:
   port: 8085
+  shutdown: graceful
 
 spring:
   application:
     name: shipping-service
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
 
   datasource:
     url: jdbc:mysql://${MYSQL_SHIPPING_HOST:localhost}:${MYSQL_SHIPPING_PORT:3306}/shipping_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
@@ -73,3 +76,30 @@ shipping:
     base-url: ${GHN_BASE_URL:https://dev-online-gateway.ghn.vn/shiip/public-api}
     token: ${GHN_TOKEN:}
     shop-id: ${GHN_SHOP_ID:}
+
+# ── Resilience4j: Circuit Breaker for external shipping API ──────────────
+resilience4j:
+  circuitbreaker:
+    instances:
+      ghnApi:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 15s
+        permittedNumberOfCallsInHalfOpenState: 3
+        slowCallDurationThreshold: 5s
+        slowCallRateThreshold: 80
+        registerHealthIndicator: true
+  retry:
+    instances:
+      ghnApi:
+        maxAttempts: 3
+        waitDuration: 1s
+        retryExceptions:
+          - java.io.IOException
+          - java.net.ConnectException
+          - java.util.concurrent.TimeoutException
+  bulkhead:
+    instances:
+      ghnApi:
+        maxConcurrentCalls: 15
+        maxWaitDuration: 500ms

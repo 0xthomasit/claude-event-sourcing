@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api-gateway
+  name: user-service
   namespace: shopping
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: api-gateway
+      app: user-service
   template:
     metadata:
       labels:
-        app: api-gateway
+        app: user-service
     spec:
       containers:
-        - name: api-gateway
-          image: shopping/api-gateway:latest
+        - name: user-service
+          image: shopping/user-service:latest
           ports:
-            - containerPort: 8080
+            - containerPort: 8087
           env:
             - name: EUREKA_HOST
               valueFrom:
@@ -29,11 +29,16 @@ spec:
                 configMapKeyRef:
                   name: shopping-config
                   key: REDIS_HOST
-            - name: JWT_SECRET
+            - name: POSTGRES_USER_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: shopping-config
+                  key: POSTGRES_USER_HOST
+            - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: shopping-secrets
-                  key: JWT_SECRET
+                  key: POSTGRES_PASSWORD
           resources:
             requests:
               memory: "512Mi"
@@ -44,25 +49,24 @@ spec:
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness
-              port: 8080
-            initialDelaySeconds: 20
+              port: 8087
+            initialDelaySeconds: 25
             periodSeconds: 10
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
-              port: 8080
-            initialDelaySeconds: 40
+              port: 8087
+            initialDelaySeconds: 45
             periodSeconds: 15
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: api-gateway
+  name: user-service
   namespace: shopping
 spec:
-  type: LoadBalancer
   selector:
-    app: api-gateway
+    app: user-service
   ports:
-    - port: 8080
-      targetPort: 8080
+    - port: 8087
+      targetPort: 8087

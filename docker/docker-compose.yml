@@ -10,9 +10,11 @@ x-service-defaults: &service-defaults
   restart: unless-stopped
   networks:
     - shopping-net
-  environment:
-    EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-discovery:8761/eureka/
-    DB_PASSWORD: secret
+  environment: &default-env
+    EUREKA_HOST: service-discovery
+    POSTGRES_PASSWORD: secret
+    MYSQL_PASSWORD: secret
+
 services:
 
   # ── Infrastructure (Tier 0) ──────────────────────────────────────────────────
@@ -44,6 +46,10 @@ services:
       context: ../infrastructure/api-gateway
       dockerfile: Dockerfile
     ports: ["8080:8080"]
+    environment:
+      <<: *default-env
+      REDIS_HOST: redis
+      JWT_SECRET: change-me-in-prod-this-is-a-long-demo-secret-key-256bits-minimum-len
     depends_on:
       service-discovery:
         condition: service_healthy
@@ -56,9 +62,11 @@ services:
       dockerfile: Dockerfile
     ports: ["8081:8081"]
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-order:5432/order_events
-      SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/order_read
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      <<: *default-env
+      POSTGRES_ORDER_HOST: postgres-order
+      POSTGRES_ORDER_PORT: 5432
+      MONGODB_HOST: mongodb
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     depends_on:
       service-discovery:
         condition: service_healthy
@@ -70,9 +78,12 @@ services:
       dockerfile: Dockerfile
     ports: ["8082:8082"]
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-payment:5432/payment_events
-      SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/payment_read
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      <<: *default-env
+      POSTGRES_PAYMENT_HOST: postgres-payment
+      POSTGRES_PAYMENT_PORT: 5432
+      MONGODB_HOST: mongodb
+      MONGODB_PORT: 27017
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     depends_on:
       service-discovery:
         condition: service_healthy
@@ -84,9 +95,11 @@ services:
       dockerfile: Dockerfile
     ports: ["8083:8083"]
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-inventory:5432/inventory_events
-      SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/inventory_read
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      <<: *default-env
+      POSTGRES_INVENTORY_HOST: postgres-inventory
+      POSTGRES_INVENTORY_PORT: 5432
+      MONGODB_HOST: mongodb
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     depends_on:
       service-discovery:
         condition: service_healthy
@@ -99,9 +112,11 @@ services:
       dockerfile: Dockerfile
     ports: ["8084:8084"]
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/notification_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      <<: *default-env
+      MYSQL_NOTIFICATION_HOST: mysql
+      MYSQL_NOTIFICATION_PORT: 3306
+      MYSQL_USER: root
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     depends_on:
       service-discovery:
         condition: service_healthy
@@ -113,9 +128,11 @@ services:
       dockerfile: Dockerfile
     ports: ["8085:8085"]
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/shipping_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      <<: *default-env
+      MYSQL_SHIPPING_HOST: mysql
+      MYSQL_SHIPPING_PORT: 3306
+      MYSQL_USER: root
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     depends_on:
       service-discovery:
         condition: service_healthy
@@ -128,8 +145,9 @@ services:
       dockerfile: Dockerfile
     ports: ["8086:8086"]
     environment:
+      <<: *default-env
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-product:5432/product_db
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     depends_on:
       service-discovery:
         condition: service_healthy
@@ -141,8 +159,10 @@ services:
       dockerfile: Dockerfile
     ports: ["8087:8087"]
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-user:5432/user_db
-      SPRING_DATA_REDIS_HOST: redis
+      <<: *default-env
+      POSTGRES_USER_HOST: postgres-user
+      POSTGRES_USER_PORT: 5432
+      REDIS_HOST: redis
     depends_on:
       service-discovery:
         condition: service_healthy
@@ -154,7 +174,8 @@ services:
       dockerfile: Dockerfile
     ports: ["8088:8088"]
     environment:
-      SPRING_DATA_REDIS_HOST: redis
+      <<: *default-env
+      REDIS_HOST: redis
     depends_on:
       service-discovery:
         condition: service_healthy
@@ -166,8 +187,9 @@ services:
       dockerfile: Dockerfile
     ports: ["8089:8089"]
     environment:
+      <<: *default-env
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-auth:5432/auth_db
-      SPRING_DATA_REDIS_HOST: redis
+      REDIS_HOST: redis
     depends_on:
       service-discovery:
         condition: service_healthy
@@ -180,8 +202,9 @@ services:
       dockerfile: Dockerfile
     ports: ["8090:8090"]
     environment:
+      <<: *default-env
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-promotion:5432/promotion_db
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     depends_on:
       service-discovery:
         condition: service_healthy
@@ -193,8 +216,9 @@ services:
       dockerfile: Dockerfile
     ports: ["8091:8091"]
     environment:
+      <<: *default-env
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-invoice:5432/invoice_db
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     depends_on:
       service-discovery:
         condition: service_healthy
@@ -206,8 +230,9 @@ services:
       dockerfile: Dockerfile
     ports: ["8092:8092"]
     environment:
+      <<: *default-env
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-review:5432/review_db
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     depends_on:
       service-discovery:
         condition: service_healthy

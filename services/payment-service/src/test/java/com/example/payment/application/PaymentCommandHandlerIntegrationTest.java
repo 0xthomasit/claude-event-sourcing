@@ -45,7 +45,7 @@ class PaymentCommandHandlerIntegrationTest {
 
     @Container
     static KafkaContainer kafka =
-            new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.6.0"));
+            new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.9.0"));
 
     @DynamicPropertySource
     static void overrideProperties(DynamicPropertyRegistry registry) {

@@ -1,4 +1,4 @@
-File đã được tạo! Tiếp tục!apiVersion: apps/v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: payment-service
@@ -34,17 +34,35 @@ spec:
                 configMapKeyRef:
                   name: shopping-config
                   key: KAFKA_BOOTSTRAP_SERVERS
+            - name: POSTGRES_PAYMENT_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: shopping-config
+                  key: POSTGRES_PAYMENT_HOST
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: shopping-secrets
                   key: POSTGRES_PASSWORD
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
           readinessProbe:
             httpGet:
-              path: /actuator/health
+              path: /actuator/health/readiness
               port: 8082
             initialDelaySeconds: 25
             periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8082
+            initialDelaySeconds: 45
+            periodSeconds: 15
 ---
 apiVersion: v1
 kind: Service

@@ -7,4 +7,19 @@ data:
   EUREKA_HOST: service-discovery
   REDIS_HOST: redis
   MONGODB_HOST: mongodb
+  MONGODB_PORT: "27017"
   KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+  JAEGER_HOST: jaeger
+  # PostgreSQL hosts
+  POSTGRES_ORDER_HOST: postgres-order
+  POSTGRES_PAYMENT_HOST: postgres-payment
+  POSTGRES_INVENTORY_HOST: postgres-inventory
+  POSTGRES_AUTH_HOST: postgres-auth
+  POSTGRES_PRODUCT_HOST: postgres-product
+  POSTGRES_USER_HOST: postgres-user
+  POSTGRES_PROMOTION_HOST: postgres-promotion
+  POSTGRES_INVOICE_HOST: postgres-invoice
+  POSTGRES_REVIEW_HOST: postgres-review
+  # MySQL hosts
+  MYSQL_NOTIFICATION_HOST: mysql
+  MYSQL_SHIPPING_HOST: mysql

@@ -1,0 +1,10 @@
+target/
+!target/*.jar
+src/
+.git/
+.gitignore
+.idea/
+*.iml
+*.md
+docker/
+k8s/

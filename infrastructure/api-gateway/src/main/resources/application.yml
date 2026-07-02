@@ -1,15 +1,23 @@
 server:
   port: 8080
+  shutdown: graceful
 
 spring:
   application:
     name: api-gateway
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
   data:
     redis:
       host: ${REDIS_HOST:localhost}
       port: 6379
   cloud:
     gateway:
+      default-filters:
+        - name: CircuitBreaker
+          args:
+            name: defaultCircuitBreaker
+            fallbackUri: forward:/fallback
       routes:
         - id: auth-service
           uri: lb://auth-service
@@ -36,6 +44,11 @@ spring:
             - Path=/api/payments/**
           filters:
             - name: AuthenticationFilter
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 5
+                redis-rate-limiter.burstCapacity: 10
+                key-resolver: "#{@userKeyResolver}"
         - id: inventory-service
           uri: lb://inventory-service
           predicates:
@@ -92,10 +105,30 @@ security:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://${EUREKA_HOST:localhost}:8761/eureka/
 
 management:
   endpoints:
     web:
       exposure:
         include: health,info,metrics,prometheus
+
+# ── Resilience4j Circuit Breaker ─────────────────────────────────────────
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
+        slowCallDurationThreshold: 3s
+        slowCallRateThreshold: 80
+        registerHealthIndicator: true
+    instances:
+      defaultCircuitBreaker:
+        baseConfig: default
+  timelimiter:
+    configs:
+      default:
+        timeoutDuration: 5s

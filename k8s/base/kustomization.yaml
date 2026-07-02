@@ -2,10 +2,25 @@ resources:
   - namespace.yaml
   - configmap.yaml
   - secret.example.yaml
+  # Infrastructure
   - service-discovery.yaml
   - api-gateway.yaml
+  # Tier 1: Event Sourcing
   - order-service.yaml
   - payment-service.yaml
   - inventory-service.yaml
+  # Tier 2: Kafka Consumer
+  - notification-service.yaml
+  - shipping-service.yaml
+  # Tier 3: CRUD
+  - product-service.yaml
+  - user-service.yaml
+  - cart-service.yaml
+  - auth-service.yaml
+  # Tier 4: New Services
+  - promotion-service.yaml
+  - invoice-service.yaml
+  - review-service.yaml
+  # Autoscaling
   - order-service-hpa.yaml
   - payment-service-hpa.yaml
