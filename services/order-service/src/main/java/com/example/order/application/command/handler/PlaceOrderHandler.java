@@ -55,8 +55,8 @@ public class PlaceOrderHandler {
 
         // 3. Calculate total
         Money total = items.stream()
-                .map(OrderItem::subtotal)
-                .reduce(Money.of(BigDecimal.ZERO, "VND"), Money::add);
+                .map(orderItem -> orderItem.subtotal())
+                .reduce(Money.of(BigDecimal.ZERO, "VND"), (a, b) -> a.add(b));
 
         // 4. Validate & redeem promotion (synchronous, pre-saga step)
         String promotionCode = null;

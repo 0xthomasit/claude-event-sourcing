@@ -1,6 +1,5 @@
 package com.example.promotion.interfaces.rest;
 
-import com.example.common.web.dto.ApiResponse;
 import com.example.promotion.application.command.dto.*;
 import com.example.promotion.application.command.handler.*;
 import com.example.promotion.application.query.dto.*;

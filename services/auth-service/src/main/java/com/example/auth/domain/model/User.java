@@ -51,6 +51,6 @@ public class User {
 
     public String rolesAsString() {
         return roles == null ? "" :
-                String.join(",", roles.stream().map(Role::name).toList());
+                String.join(",", roles.stream().map(role -> role.name()).toList());
     }
 }

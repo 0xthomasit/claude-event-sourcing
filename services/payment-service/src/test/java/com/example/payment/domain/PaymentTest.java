@@ -4,7 +4,6 @@ import com.example.common.domain.model.Money;
 import com.example.common.events.payment.*;
 import com.example.payment.domain.model.Payment;
 import com.example.payment.domain.model.PaymentMethod;
-import com.example.payment.domain.model.PaymentMethodType;
 import com.example.payment.domain.model.PaymentStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

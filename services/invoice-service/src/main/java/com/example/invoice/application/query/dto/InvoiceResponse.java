@@ -1,7 +1,6 @@
 package com.example.invoice.application.query.dto;
 
 import com.example.invoice.domain.model.Invoice;
-import com.example.invoice.domain.model.InvoiceLineItem;
 import lombok.*;
 
 import java.math.BigDecimal;

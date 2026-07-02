@@ -42,10 +42,9 @@ public class StockItem extends AggregateRoot {
             throw new IllegalArgumentException("initialQty must be >= 0");
 
         StockItem item = new StockItem();
-        item.id = UUID.randomUUID();
 
         StockReplenishedEvent event = StockReplenishedEvent.builder()
-                .aggregateId(item.id.toString())
+                .aggregateId(UUID.randomUUID().toString())
                 .productId(productId)
                 .quantity(initialQty)
                 .reference("INITIAL")

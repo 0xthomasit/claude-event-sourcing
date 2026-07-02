@@ -9,9 +9,12 @@ import org.springframework.web.client.RestClient;
 
 /**
  * Real e-invoice provider integration via REST API.
- * Supports VNPT (einvoice.provider=vnpt) or Viettel (einvoice.provider=viettel).
+ * Supports VNPT (einvoice.provider=vnpt) or Viettel
+ * (einvoice.provider=viettel).
  *
- * <p>Requires configuration:
+ * <p>
+ * Requires configuration:
+ * 
  * <pre>
  * einvoice:
  *   provider: vnpt
@@ -31,7 +34,7 @@ public class VnptEInvoiceProvider implements EInvoiceProvider {
     private String companyTaxCode;
 
     public VnptEInvoiceProvider(@Value("${einvoice.api-url}") String apiUrl,
-                                 @Value("${einvoice.api-key}") String apiKey) {
+            @Value("${einvoice.api-key}") String apiKey) {
         this.restClient = RestClient.builder()
                 .baseUrl(apiUrl)
                 .defaultHeader("Authorization", "Bearer " + apiKey)
@@ -49,10 +52,10 @@ public class VnptEInvoiceProvider implements EInvoiceProvider {
 
         // Placeholder: would parse response for the provider's reference
         // var response = restClient.post()
-        //     .uri("/api/v2/invoice/create")
-        //     .body(buildPayload(invoice))
-        //     .retrieve()
-        //     .body(Map.class);
+        // .uri("/api/v2/invoice/create")
+        // .body(buildPayload(invoice))
+        // .retrieve()
+        // .body(Map.class);
         // return response.get("invoiceId").toString();
 
         return "VNPT-" + invoice.getInvoiceNumber();

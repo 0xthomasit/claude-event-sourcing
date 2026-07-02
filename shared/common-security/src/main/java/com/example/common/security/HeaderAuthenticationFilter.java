@@ -41,7 +41,7 @@ public class HeaderAuthenticationFilter extends OncePerRequestFilter {
     private List<SimpleGrantedAuthority> parseRoles(String rolesHeader) {
         if (!StringUtils.hasText(rolesHeader)) return Collections.emptyList();
         return Arrays.stream(rolesHeader.split(","))
-                .map(String::trim)
+                .map(e -> e.trim())
                 .filter(StringUtils::hasText)
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                 .toList();

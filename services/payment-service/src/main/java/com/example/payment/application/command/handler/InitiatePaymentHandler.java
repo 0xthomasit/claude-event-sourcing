@@ -1,7 +1,6 @@
 package com.example.payment.application.command.handler;
 
 import com.example.common.domain.model.Money;
-import com.example.common.events.payment.PaymentInitiatedEvent;
 import com.example.payment.application.command.dto.InitiatePaymentCommand;
 import com.example.payment.domain.model.Payment;
 import com.example.payment.domain.model.PaymentMethod;

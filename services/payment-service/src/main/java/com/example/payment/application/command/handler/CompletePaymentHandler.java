@@ -1,7 +1,6 @@
 package com.example.payment.application.command.handler;
 
 import com.example.common.domain.exception.AggregateNotFoundException;
-import com.example.common.events.payment.PaymentCompletedEvent;
 import com.example.payment.application.command.dto.CompletePaymentCommand;
 import com.example.payment.domain.model.Payment;
 import com.example.payment.domain.repository.PaymentRepository;

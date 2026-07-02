@@ -113,8 +113,8 @@ public class Invoice {
 
         // Calculate subtotal from line items
         this.subtotal = lineItems.stream()
-                .map(InvoiceLineItem::getLineTotal)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                .map(invoiceLineItem -> invoiceLineItem.getLineTotal())
+                .reduce(BigDecimal.ZERO, (a, b) -> a.add(b));
 
         // Apply discount
         BigDecimal taxableAmount = subtotal.subtract(

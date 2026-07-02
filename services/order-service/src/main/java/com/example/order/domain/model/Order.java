@@ -40,8 +40,8 @@ public class Order extends AggregateRoot {
         order.id = UUID.randomUUID();
 
         Money total = items.stream()
-                .map(OrderItem::subtotal)
-                .reduce(Money.of(BigDecimal.ZERO, "VND"), Money::add);
+                .map(item -> item.subtotal())
+                .reduce(Money.of(BigDecimal.ZERO, "VND"), (a, b) -> a.add(b));
 
         List<OrderItemDto> itemDtos = items.stream()
                 .map(i -> OrderItemDto.builder()
@@ -125,7 +125,7 @@ public class Order extends AggregateRoot {
             throw new IllegalStateException("Cannot deliver order in status: " + status);
 
         List<String> productIds = items.stream()
-                .map(OrderItem::getProductId)
+                .map(orderItem -> orderItem.getProductId())
                 .toList();
 
         OrderDeliveredEvent event = OrderDeliveredEvent.builder()

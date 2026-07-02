@@ -7,8 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.time.Instant;
-
 /**
  * Rebuilds the MongoDB Read Model from domain events.
  * Called synchronously after events are persisted to the Event Store.

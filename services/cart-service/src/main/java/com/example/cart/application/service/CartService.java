@@ -99,8 +99,8 @@ public class CartService {
 
     public BigDecimal getTotal(String userId) {
         return getCart(userId).stream()
-                .map(CartItem::getSubtotal)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                .map(cartItem -> cartItem.getSubtotal())
+                .reduce(BigDecimal.ZERO, (a, b) -> a.add(b));
     }
 
     public int getItemCount(String userId) {
