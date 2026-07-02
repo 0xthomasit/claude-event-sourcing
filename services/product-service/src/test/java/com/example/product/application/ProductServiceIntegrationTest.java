@@ -21,13 +21,14 @@ import java.math.BigDecimal;
 import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
-@Testcontainers
+@Testcontainers(disabledWithoutDocker = true)
 @DisplayName("ProductService integration tests")
 class ProductServiceIntegrationTest {
 
     @Container
+    @SuppressWarnings("resource")
     static PostgreSQLContainer<?> postgres =
-            new PostgreSQLContainer<>("postgres:16-alpine")
+            new PostgreSQLContainer<>("postgres:18.4-alpine")
                     .withDatabaseName("product_db")
                     .withUsername("postgres")
                     .withPassword("secret");

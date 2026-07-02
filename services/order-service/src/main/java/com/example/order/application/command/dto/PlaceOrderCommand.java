@@ -15,6 +15,8 @@ public class PlaceOrderCommand {
     @NotBlank
     private final String customerId;
 
+    private final String promotionCode;   // optional — coupon/voucher code
+
     @NotEmpty @Valid
     private final List<OrderItemRequest> items;
 

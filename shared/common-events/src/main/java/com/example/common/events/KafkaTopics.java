@@ -26,5 +26,17 @@ public final class KafkaTopics {
     // Product topics
     public static final String PRODUCT_PRICE_UPDATED = "product.price.updated";
 
+    // Promotion topics
+    public static final String PROMOTION_REDEEMED = "promotion.promotion.redeemed";
+    public static final String PROMOTION_RELEASED = "promotion.promotion.released";
+
+    // Invoice topics
+    public static final String INVOICE_ISSUED = "invoice.invoice.issued";
+    public static final String INVOICE_VOIDED = "invoice.invoice.voided";
+
+    // Review topics
+    public static final String REVIEW_SUBMITTED = "review.review.submitted";
+    public static final String REVIEW_APPROVED  = "review.review.approved";
+
     private KafkaTopics() {}
 }

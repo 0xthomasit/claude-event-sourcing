@@ -1,6 +1,6 @@
 services:
   postgres-order:
-    image: postgres:17.10-alpine
+    image: postgres:18.4-alpine
     container_name: postgres-order
     environment:
       POSTGRES_DB: order_events
@@ -9,12 +9,12 @@ services:
     ports:
       - "5433:5432"
     volumes:
-      - postgres-order-data:/var/lib/postgresql/data
+      - postgres-order-data:/var/lib/postgresql
     networks:
       - shopping-net
 
   postgres-payment:
-    image: postgres:17.10-alpine
+    image: postgres:18.4-alpine
     container_name: postgres-payment
     environment:
       POSTGRES_DB: payment_events
@@ -23,12 +23,12 @@ services:
     ports:
       - "5434:5432"
     volumes:
-      - postgres-payment-data:/var/lib/postgresql/data
+      - postgres-payment-data:/var/lib/postgresql
     networks:
       - shopping-net
 
   postgres-inventory:
-    image: postgres:17.10-alpine
+    image: postgres:18.4-alpine
     container_name: postgres-inventory
     environment:
       POSTGRES_DB: inventory_events
@@ -37,12 +37,12 @@ services:
     ports:
       - "5435:5432"
     volumes:
-      - postgres-inventory-data:/var/lib/postgresql/data
+      - postgres-inventory-data:/var/lib/postgresql
     networks:
       - shopping-net
 
   postgres-auth:
-    image: postgres:17.10-alpine
+    image: postgres:18.4-alpine
     container_name: postgres-auth
     environment:
       POSTGRES_DB: auth_db
@@ -51,12 +51,12 @@ services:
     ports:
       - "5436:5432"
     volumes:
-      - postgres-auth-data:/var/lib/postgresql/data
+      - postgres-auth-data:/var/lib/postgresql
     networks:
       - shopping-net
 
   postgres-product:
-    image: postgres:17.10-alpine
+    image: postgres:18.4-alpine
     container_name: postgres-product
     environment:
       POSTGRES_DB: product_db
@@ -65,12 +65,12 @@ services:
     ports:
       - "5437:5432"
     volumes:
-      - postgres-product-data:/var/lib/postgresql/data
+      - postgres-product-data:/var/lib/postgresql
     networks:
       - shopping-net
 
   postgres-user:
-    image: postgres:17.10-alpine
+    image: postgres:18.4-alpine
     container_name: postgres-user
     environment:
       POSTGRES_DB: user_db
@@ -79,7 +79,49 @@ services:
     ports:
       - "5438:5432"
     volumes:
-      - postgres-user-data:/var/lib/postgresql/data
+      - postgres-user-data:/var/lib/postgresql
+    networks:
+      - shopping-net
+
+  postgres-promotion:
+    image: postgres:18.4-alpine
+    container_name: postgres-promotion
+    environment:
+      POSTGRES_DB: promotion_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secret
+    ports:
+      - "5440:5432"
+    volumes:
+      - postgres-promotion-data:/var/lib/postgresql
+    networks:
+      - shopping-net
+
+  postgres-invoice:
+    image: postgres:18.4-alpine
+    container_name: postgres-invoice
+    environment:
+      POSTGRES_DB: invoice_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secret
+    ports:
+      - "5441:5432"
+    volumes:
+      - postgres-invoice-data:/var/lib/postgresql
+    networks:
+      - shopping-net
+
+  postgres-review:
+    image: postgres:18.4-alpine
+    container_name: postgres-review
+    environment:
+      POSTGRES_DB: review_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secret
+    ports:
+      - "5439:5432"
+    volumes:
+      - postgres-review-data:/var/lib/postgresql
     networks:
       - shopping-net
 
@@ -115,7 +157,7 @@ services:
       - shopping-net
 
   zookeeper:
-    image: confluentinc/cp-zookeeper:7.6.12
+    image: confluentinc/cp-zookeeper:7.9.8
     container_name: zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
@@ -196,6 +238,9 @@ volumes:
   postgres-auth-data:
   postgres-product-data:
   postgres-user-data:
+  postgres-promotion-data:
+  postgres-invoice-data:
+  postgres-review-data:
   mongodb-data:
   mysql-data:
 

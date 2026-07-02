@@ -51,6 +51,7 @@ public class OrderController {
 
         PlaceOrderCommand command = PlaceOrderCommand.builder()
                 .customerId(userId)
+                .promotionCode(request.promotionCode())
                 .items(request.items().stream()
                         .map(i -> PlaceOrderCommand.OrderItemRequest.builder()
                                 .productId(i.productId())
@@ -172,7 +173,7 @@ public class OrderController {
 
     // ─── Request records ──────────────────────────────────────────────────────
 
-    public record PlaceOrderRequest(List<OrderItemRequest> items) {
+    public record PlaceOrderRequest(List<OrderItemRequest> items, String promotionCode) {
         public record OrderItemRequest(
                 String productId, String productName,
                 int quantity, BigDecimal unitPrice, String currency) {}

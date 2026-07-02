@@ -16,3 +16,6 @@ scrape_configs:
           - 'host.docker.internal:8088'
           - 'host.docker.internal:8089'
           - 'host.docker.internal:8080'
+          - 'host.docker.internal:8090'
+          - 'host.docker.internal:8091'
+          - 'host.docker.internal:8092'

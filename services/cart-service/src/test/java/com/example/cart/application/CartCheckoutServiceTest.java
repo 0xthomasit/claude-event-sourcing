@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -39,6 +40,8 @@ class CartCheckoutServiceTest {
     @Mock RestClient.RequestBodySpec requestBodySpec;
     @Mock RestClient.ResponseSpec responseSpec;
 
+    @Captor ArgumentCaptor<Map<String, Object>> bodyCaptor;
+
     @InjectMocks CartCheckoutService cartCheckoutService;
 
     @Test
@@ -69,13 +72,12 @@ class CartCheckoutServiceTest {
         headers.setLocation(URI.create("http://localhost:8081/api/orders/order-123"));
         when(responseSpec.toBodilessEntity()).thenReturn(new ResponseEntity<>(headers, HttpStatus.CREATED));
 
-        CheckoutResponse response = cartCheckoutService.checkout(userId);
+        CheckoutResponse response = cartCheckoutService.checkout(userId, null);
 
         assertThat(response.getOrderId()).isEqualTo("order-123");
         assertThat(response.getStatus()).isEqualTo("CREATED");
         verify(cartService).clearCart(userId);
 
-        ArgumentCaptor<Map<String, Object>> bodyCaptor = ArgumentCaptor.forClass(Map.class);
         verify(requestBodySpec).body(bodyCaptor.capture());
         assertThat(bodyCaptor.getValue()).containsKey("items");
     }

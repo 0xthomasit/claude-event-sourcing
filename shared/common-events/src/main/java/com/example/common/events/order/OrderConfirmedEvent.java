@@ -7,6 +7,7 @@ import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 
 @Getter
 @Builder
@@ -17,6 +18,7 @@ public class OrderConfirmedEvent implements DomainEvent {
     private final String aggregateId;
     private final String customerId;
     private final BigDecimal totalAmount;
+    private final List<OrderItemDto> items;
     private final Instant occurredOn;
 
     @Builder.Default

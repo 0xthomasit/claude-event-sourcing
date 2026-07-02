@@ -66,6 +66,24 @@ spring:
             - Path=/api/notifications/**
           filters:
             - name: AuthenticationFilter
+        - id: promotion-service
+          uri: lb://promotion-service
+          predicates:
+            - Path=/api/promotions/**
+          filters:
+            - name: AuthenticationFilter
+        - id: invoice-service
+          uri: lb://invoice-service
+          predicates:
+            - Path=/api/invoices/**
+          filters:
+            - name: AuthenticationFilter
+        - id: review-service
+          uri: lb://review-service
+          predicates:
+            - Path=/api/reviews/**
+          filters:
+            - name: AuthenticationFilter
 
 security:
   jwt:

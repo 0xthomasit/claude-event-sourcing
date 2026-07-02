@@ -172,6 +172,46 @@ services:
       service-discovery:
         condition: service_healthy
 
+  # ── Tier 4: New Services ──────────────────────────────────────────────────
+  promotion-service:
+    <<: *service-defaults
+    build:
+      context: ../services/promotion-service
+      dockerfile: Dockerfile
+    ports: ["8090:8090"]
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-promotion:5432/promotion_db
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    depends_on:
+      service-discovery:
+        condition: service_healthy
+
+  invoice-service:
+    <<: *service-defaults
+    build:
+      context: ../services/invoice-service
+      dockerfile: Dockerfile
+    ports: ["8091:8091"]
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-invoice:5432/invoice_db
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    depends_on:
+      service-discovery:
+        condition: service_healthy
+
+  review-service:
+    <<: *service-defaults
+    build:
+      context: ../services/review-service
+      dockerfile: Dockerfile
+    ports: ["8092:8092"]
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-review:5432/review_db
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    depends_on:
+      service-discovery:
+        condition: service_healthy
+
 networks:
   shopping-net:
     driver: bridge

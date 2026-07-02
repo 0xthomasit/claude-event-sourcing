@@ -89,7 +89,9 @@ public class CartController {
 
     @PostMapping("/{userId}/checkout")
     @Operation(summary = "Checkout cart: convert cart to order then clear cart")
-    public ResponseEntity<CheckoutResponse> checkout(@PathVariable String userId) {
-        return ResponseEntity.ok(cartCheckoutService.checkout(userId));
+    public ResponseEntity<CheckoutResponse> checkout(
+            @PathVariable String userId,
+            @RequestParam(required = false) String promotionCode) {
+        return ResponseEntity.ok(cartCheckoutService.checkout(userId, promotionCode));
     }
 }

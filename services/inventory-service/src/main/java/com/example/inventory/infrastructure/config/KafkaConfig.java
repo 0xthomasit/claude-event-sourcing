@@ -5,7 +5,7 @@ import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.TopicBuilder;
-import org.springframework.kafka.support.converter.JsonMessageConverter;
+import org.springframework.kafka.support.converter.JacksonJsonMessageConverter;
 
 @Configuration
 public class KafkaConfig {
@@ -25,7 +25,7 @@ public class KafkaConfig {
     @Bean public NewTopic stockAdjustedTopic() {
         return TopicBuilder.name(KafkaTopics.STOCK_ADJUSTED).partitions(3).replicas(1).build();
     }
-    @Bean public JsonMessageConverter jsonMessageConverter() {
-        return new JsonMessageConverter();
+    @Bean public JacksonJsonMessageConverter JacksonJsonMessageConverter() {
+        return new JacksonJsonMessageConverter();
     }
 }

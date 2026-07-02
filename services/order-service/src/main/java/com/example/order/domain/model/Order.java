@@ -72,10 +72,21 @@ public class Order extends AggregateRoot {
         if (status != OrderStatus.PENDING)
             throw new IllegalStateException("Only PENDING orders can be confirmed, current: " + status);
 
+        List<OrderItemDto> itemDtos = items.stream()
+                .map(i -> OrderItemDto.builder()
+                        .productId(i.getProductId())
+                        .productName(i.getProductName())
+                        .quantity(i.getQuantity())
+                        .unitPrice(i.getUnitPrice().getAmount())
+                        .currency(i.getUnitPrice().getCurrency())
+                        .build())
+                .toList();
+
         OrderConfirmedEvent event = OrderConfirmedEvent.builder()
                 .aggregateId(id.toString())
                 .customerId(customerId)
                 .totalAmount(totalAmount.getAmount())
+                .items(itemDtos)
                 .occurredOn(Instant.now())
                 .build();
         raiseEvent(event);
@@ -113,8 +124,14 @@ public class Order extends AggregateRoot {
         if (status != OrderStatus.SHIPPED)
             throw new IllegalStateException("Cannot deliver order in status: " + status);
 
+        List<String> productIds = items.stream()
+                .map(OrderItem::getProductId)
+                .toList();
+
         OrderDeliveredEvent event = OrderDeliveredEvent.builder()
                 .aggregateId(id.toString())
+                .customerId(customerId)
+                .productIds(productIds)
                 .occurredOn(Instant.now())
                 .build();
         raiseEvent(event);

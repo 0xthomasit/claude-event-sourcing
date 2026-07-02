@@ -29,7 +29,7 @@ public class CartCheckoutService {
     @Value("${services.order-service.base-url:http://localhost:8081}")
     private String orderServiceBaseUrl;
 
-    public CheckoutResponse checkout(String userId) {
+    public CheckoutResponse checkout(String userId, String promotionCode) {
         List<CartItem> items = cartService.getCart(userId);
         if (items.isEmpty()) {
             throw new IllegalStateException("Cannot checkout empty cart for userId=" + userId);
@@ -44,12 +44,19 @@ public class CartCheckoutService {
                         "currency", item.getCurrency()))
                 .toList();
 
+        // Build order request body — include promotionCode if provided
+        Map<String, Object> orderBody = new java.util.HashMap<>();
+        orderBody.put("items", payloadItems);
+        if (promotionCode != null && !promotionCode.isBlank()) {
+            orderBody.put("promotionCode", promotionCode);
+        }
+
         RestClient restClient = restClientBuilder.baseUrl(orderServiceBaseUrl).build();
         String location = restClient.post()
                 .uri("/api/orders")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("X-User-Id", userId)
-                .body(Map.of("items", payloadItems))
+                .body(orderBody)
                 .retrieve()
                 .toBodilessEntity()
                 .getHeaders()

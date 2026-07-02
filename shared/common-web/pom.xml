@@ -14,6 +14,13 @@
     <name>common-web</name>
     <description>Shared web: Global Response Wrapper and Global Exception Handler</description>
     <dependencies>
+        <!-- Jackson annotations (used by both Jackson 2 and Jackson 3) -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+        </dependency>
+
+        <!-- Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>

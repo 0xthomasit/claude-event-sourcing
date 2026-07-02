@@ -22,13 +22,14 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
-@Testcontainers
+@Testcontainers(disabledWithoutDocker = true)
 @DisplayName("AuthService integration tests")
 class AuthServiceIntegrationTest {
 
     @Container
+    @SuppressWarnings("resource")
     static PostgreSQLContainer<?> postgres =
-            new PostgreSQLContainer<>("postgres:16-alpine")
+            new PostgreSQLContainer<>("postgres:18.4-alpine")
                     .withDatabaseName("auth_db")
                     .withUsername("postgres")
                     .withPassword("secret");

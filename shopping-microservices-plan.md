@@ -1030,7 +1030,7 @@ class OrderCommandHandlerIntegrationTest {
 
     @Container
     static PostgreSQLContainer<?> postgres =
-        new PostgreSQLContainer<>("postgres:16-alpine");
+        new PostgreSQLContainer<>("postgres:18.4-alpine");
 
     @Container
     static MongoDBContainer mongo =

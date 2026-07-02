@@ -27,13 +27,14 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-@Testcontainers
+@Testcontainers(disabledWithoutDocker = true)
 @DisplayName("Payment Command Handler Integration Tests")
 class PaymentCommandHandlerIntegrationTest {
 
     @Container
+    @SuppressWarnings("resource")
     static PostgreSQLContainer<?> postgres =
-            new PostgreSQLContainer<>("postgres:16-alpine")
+            new PostgreSQLContainer<>("postgres:18.4-alpine")
                     .withDatabaseName("payment_events")
                     .withUsername("postgres")
                     .withPassword("secret");

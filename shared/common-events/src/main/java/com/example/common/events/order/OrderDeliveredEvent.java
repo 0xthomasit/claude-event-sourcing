@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.Instant;
+import java.util.List;
 
 @Getter
 @Builder
@@ -14,6 +15,8 @@ import java.time.Instant;
 public class OrderDeliveredEvent implements DomainEvent {
 
     private final String aggregateId;
+    private final String customerId;
+    private final List<String> productIds;
     private final Instant occurredOn;
 
     @Builder.Default
