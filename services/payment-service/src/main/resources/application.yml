@@ -7,9 +7,9 @@ spring:
 
   # ── PostgreSQL Event Store ──────────────────────────────────────────────────
   datasource:
-    url: jdbc:postgresql://localhost:5434/payment_events
-    username: postgres
-    password: ${DB_PASSWORD:secret}
+    url: jdbc:postgresql://${POSTGRES_PAYMENT_HOST:localhost}:${POSTGRES_PAYMENT_PORT:5434}/payment_events
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:secret}
     hikari:
       maximum-pool-size: 10
       minimum-idle: 2
@@ -23,6 +23,7 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: false
     show-sql: false
+    open-in-view: false
 
   flyway:
     enabled: true
@@ -31,14 +32,14 @@ spring:
   # ── MongoDB Read Model ──────────────────────────────────────────────────────
   data:
     mongodb:
-      uri: mongodb://localhost:27017/payment_read
+      uri: mongodb://${MONGODB_HOST:localhost}:${MONGODB_PORT:27017}/payment_read
 
   # ── Kafka ───────────────────────────────────────────────────────────────────
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:29092}
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JacksonJsonSerializer
       acks: all
       retries: 3
       properties:
@@ -56,7 +57,7 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://${EUREKA_HOST:localhost}:8761/eureka/
   instance:
     prefer-ip-address: true
 
@@ -71,6 +72,9 @@ management:
       enabled: true
     db:
       enabled: true
+  tracing:
+    sampling:
+      probability: 1.0
 
 # ── Logging ──────────────────────────────────────────────────────────────────
 logging:
@@ -83,6 +87,6 @@ logging:
 # ── OpenAPI ───────────────────────────────────────────────────────────────────
 springdoc:
   api-docs:
-    path: /api-docs
+    path: /v3/api-docs
   swagger-ui:
     path: /swagger-ui.html
